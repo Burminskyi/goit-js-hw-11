@@ -25,8 +25,10 @@ async function handleSubmit(event) {
   hideLoadMoreBtn();
 
   const searchQuery = refs.form.searchQuery.value.trim();
-  if (query === searchQuery) {
-    // Notiflix.Notify.failure('Введите новый запрос');
+
+  if (query !== '' && query === searchQuery) {
+    Notiflix.Notify.failure('Введите новый запрос');
+    showLoadMoreBtn();
     return;
   }
   pageNumber = 1;
@@ -76,24 +78,6 @@ async function onLoadMoreBtnClick(event) {
   }
 }
 
-function addMoreImages(markup) {
-  refs.gallery.insertAdjacentHTML('beforeend', markup);
-  gallery.refresh();
-}
-
-function renderGallery(markup) {
-  refs.gallery.innerHTML = markup;
-  gallery.refresh();
-}
-
-function showLoadMoreBtn() {
-  refs.loadMoreBtn.classList.remove('disabled');
-}
-
-function hideLoadMoreBtn() {
-  refs.loadMoreBtn.classList.add('disabled');
-}
-
 function createImagesMarkup(images) {
   if (!images) {
     return;
@@ -122,8 +106,39 @@ function createImagesMarkup(images) {
   return markup;
 }
 
+function renderGallery(markup) {
+  refs.gallery.innerHTML = markup;
+  gallery.refresh();
+  afterGalleryRenderScroll();
+}
+
+function addMoreImages(markup) {
+  refs.gallery.insertAdjacentHTML('beforeend', markup);
+  gallery.refresh();
+  afterGalleryRenderScroll();
+}
+
+function showLoadMoreBtn() {
+  refs.loadMoreBtn.classList.remove('disabled');
+}
+
+function hideLoadMoreBtn() {
+  refs.loadMoreBtn.classList.add('disabled');
+}
+
 function notifySuccess(totalHits) {
   Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`);
+}
+
+function afterGalleryRenderScroll() {
+  const { height: cardHeight } = document
+    .querySelector('.gallery')
+    .firstElementChild.getBoundingClientRect();
+
+  window.scrollBy({
+    top: cardHeight * 2,
+    behavior: 'smooth',
+  });
 }
 
 // !функции на промисах
