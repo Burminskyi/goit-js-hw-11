@@ -62,10 +62,6 @@ async function onLoadMoreBtnClick(event) {
     const totalPages = Math.ceil(data.totalHits / 40);
 
     if (pageNumber > totalPages) {
-      Notiflix.Notify.failure(
-        "We're sorry, but you've reached the end of search results."
-      );
-      hideLoadMoreBtn();
       throw new Error(
         "We're sorry, but you've reached the end of search results."
       );
@@ -74,7 +70,9 @@ async function onLoadMoreBtnClick(event) {
     const markup = await createImagesMarkup(images);
     addMoreImages(markup);
   } catch (error) {
-    console.log(error.message);
+    Notiflix.Notify.failure(error.message);
+
+    hideLoadMoreBtn();
   }
 }
 

@@ -6,18 +6,16 @@ const URL =
 async function getImages(request, pageNumber) {
   const response = await axios.get(`${URL}&q=${request}&page=${pageNumber}`);
   const results = response.data;
-  console.log('response.data', response.data);
 
   const { totalHits, hits } = results;
 
   if (totalHits === 0) {
-    Notiflix.Notify.failure(
-      'Sorry, there are no images matching your search query. Please try again.'
-    );
-    throw new Error(
-      'Sorry, there are no images matching your search query. Please try again.'
-    );
+    const errorMessage =
+      'Sorry, there are no images matching your search query. Please try again.';
+    Notiflix.Notify.failure(errorMessage);
+    throw new Error(errorMessage);
   }
+
   return results;
 }
 
