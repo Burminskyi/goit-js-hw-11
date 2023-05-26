@@ -40,15 +40,16 @@ async function handleSubmit(event) {
 
   try {
     const data = await getImages(query, pageNumber);
+    const totalPages = Math.ceil(data.totalHits / 40);
     const images = data.hits;
     const totalHits = data.totalHits;
-
-    notifySuccess(totalHits);
-
     const markup = await createImagesMarkup(images);
-
+    notifySuccess(totalHits);
     renderGallery(markup);
-    showLoadMoreBtn();
+
+    if (pageNumber !== totalPages) {
+      showLoadMoreBtn();
+    }
   } catch (error) {
     console.log(error.message);
   }
@@ -60,15 +61,15 @@ async function onLoadMoreBtnClick(event) {
     const data = await getImages(query, pageNumber);
     const images = data.hits;
     const totalPages = Math.ceil(data.totalHits / 40);
-
-    if (pageNumber > totalPages) {
-      throw new Error(
-        "We're sorry, but you've reached the end of search results."
-      );
-    }
-
     const markup = await createImagesMarkup(images);
     addMoreImages(markup);
+
+    if (pageNumber === totalPages) {
+      Notiflix.Notify.info(
+        "We're sorry, but you've reached the end of search results."
+      );
+      hideLoadMoreBtn();
+    }
   } catch (error) {
     Notiflix.Notify.failure(error.message);
 
